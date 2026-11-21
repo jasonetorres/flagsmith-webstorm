@@ -1,0 +1,16 @@
+<idea-plugin>
+    <id>com.jasontorres.flagsmith</id>
+    <name>Flagsmith</name>
+    <vendor url="https://github.com/jasonetorres">Jason Torres</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>JavaScript</depends>
+
+    <description><![CDATA[
+        Flagsmith integration for WebStorm.
+        Manage feature flags from your self-hosted Flagsmith instance directly in the IDE.
+    ]]></description>
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+</idea-plugin>
