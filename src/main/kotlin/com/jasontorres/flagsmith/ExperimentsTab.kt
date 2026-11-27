@@ -33,6 +33,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JProgressBar
 import javax.swing.JSplitPane
+import javax.swing.SwingUtilities
 import javax.swing.ListSelectionModel
 import javax.swing.SwingConstants
 import javax.swing.UIManager
@@ -110,8 +111,10 @@ class ExperimentsTab(private val project: Project) {
         topPanel.add(toolbar.component, BorderLayout.EAST)
         panel!!.add(topPanel, BorderLayout.NORTH)
 
-        val splitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT).apply {
-            resizeWeight = 0.4
+        // Stacked: the tool window is a narrow side panel, so a side-by-side
+        // split leaves the list a few pixels wide.
+        val splitPane = JSplitPane(JSplitPane.VERTICAL_SPLIT).apply {
+            resizeWeight = 0.2
             isContinuousLayout = true
         }
         mainSplit = splitPane
@@ -307,6 +310,15 @@ class ExperimentsTab(private val project: Project) {
         mainSplit?.isVisible = true
         experiments.forEach { exp ->
             listModel.addElement("${exp.name} (${exp.status})")
+        }
+        // The split may have been laid out while hidden, which collapses the list.
+        SwingUtilities.invokeLater {
+            val rows = experiments.size.coerceIn(1, 4)
+            val listHeight = (experimentList?.fixedCellHeight?.takeIf { it > 0 } ?: 24) * rows + 12
+            mainSplit?.dividerLocation = listHeight
+            if (experimentList?.selectedIndex == -1 && experiments.isNotEmpty()) {
+                experimentList?.selectedIndex = 0
+            }
         }
     }
 
