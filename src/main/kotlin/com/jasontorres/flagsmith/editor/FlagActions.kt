@@ -87,7 +87,7 @@ object FlagActions {
         FlagCache.getInstance(project).replace(flag.copy(enabled = enabled))
         project.publishFlagToggled(flag.feature.name, enabled)
         AppExecutorUtil.getAppExecutorService().execute {
-            val ok = settings.client().toggleFeatureState(flag.id, enabled)
+            val ok = settings.client().toggleFeatureState(flag.id, enabled, flag.feature.id)
             ApplicationManager.getApplication().invokeLater {
                 if (!ok) {
                     FlagCache.getInstance(project).replace(flag)

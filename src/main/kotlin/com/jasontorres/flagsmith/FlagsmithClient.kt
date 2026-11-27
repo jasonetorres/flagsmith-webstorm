@@ -73,13 +73,67 @@ class FlagsmithClient(
      * Toggle a feature flag's enabled state.
      * PATCH /api/v1/environments/{key}/featurestates/{id}/
      */
-    fun toggleFeatureState(featureStateId: Int, newEnabled: Boolean): Boolean {
-        return sendJson<Unit>(
+    fun toggleFeatureState(featureStateId: Int, newEnabled: Boolean, featureId: Int? = null): Boolean {
+        val ok = sendJson<Unit>(
             "PATCH",
             "/environments/$environmentKey/featurestates/$featureStateId/",
             mapOf("enabled" to newEnabled),
             null
         ) is FlagsmithApiResult.Ok
+        if (ok && featureId != null) syncExperimentRollouts(featureId, newEnabled)
+        return ok
+    }
+
+    /**
+     * Make the IDE toggle a real kill switch. A running experiment owns a
+     * system segment override (its percentage rollout) that keeps the flag on
+     * for identified users even after the environment default is turned off,
+     * and Flagsmith refuses direct edits to that override (409). The supported
+     * route is the experiment's rollout endpoint, so the rollout's `enabled`
+     * follows the toggle; percentage, value and variant split stay as they are.
+     * GET   /api/v1/environments/{key}/experiments/
+     * GET   /api/v1/environments/{key}/experiments/{id}/
+     * PATCH /api/v1/environments/{key}/experiments/{id}/rollout/
+     */
+    fun syncExperimentRollouts(featureId: Int, newEnabled: Boolean): Boolean {
+        val experiments = (getExperiments() as? FlagsmithApiResult.Ok)?.value?.results ?: return false
+        var allOk = true
+        experiments
+            .filter { it.feature?.id == featureId && it.status != "completed" }
+            .forEach { exp ->
+                val detail = getJson(
+                    "/environments/$environmentKey/experiments/${exp.id}/",
+                    Map::class.java
+                ) as? FlagsmithApiResult.Ok ?: run { allOk = false; return@forEach }
+                @Suppress("UNCHECKED_CAST")
+                val rollout = (detail.value["experiment_rollout"] as? Map<String, Any?>)?.toMutableMap()
+                    ?: return@forEach
+                if (rollout["enabled"] == newEnabled) return@forEach
+                rollout["enabled"] = newEnabled
+                @Suppress("UNCHECKED_CAST")
+                val audience = (rollout["audience"] as? Map<String, Any?>) ?: emptyMap()
+                val segmentIds = ((audience["segment_ids"] ?: audience["segments"]) as? List<*>)
+                    .orEmpty()
+                    .mapNotNull { seg ->
+                        when (seg) {
+                            is Number -> seg.toInt()
+                            is Map<*, *> -> (seg["id"] as? Number)?.toInt()
+                            else -> null
+                        }
+                    }
+                rollout["audience"] = mapOf(
+                    "match" to (audience["match"] ?: "any"),
+                    "segment_ids" to segmentIds
+                )
+                val r = sendJson<Unit>(
+                    "PATCH",
+                    "/environments/$environmentKey/experiments/${exp.id}/rollout/",
+                    rollout,
+                    null
+                )
+                if (r !is FlagsmithApiResult.Ok) allOk = false
+            }
+        return allOk
     }
 
     /**

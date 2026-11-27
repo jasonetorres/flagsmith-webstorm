@@ -229,3 +229,4 @@ data class CreatedFeature(
     @SerializedName("default_enabled") val defaultEnabled: Boolean? = null,
     @SerializedName("initial_value") val initialValue: Any? = null
 )
+
