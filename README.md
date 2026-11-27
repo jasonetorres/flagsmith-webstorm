@@ -6,6 +6,8 @@ This is an unofficial community plugin. It is not affiliated with, endorsed by, 
 
 Built by [Jason Torres](https://github.com/jasonetorres), Developer Advocate at JetBrains.
 
+**Demo video:** _link coming_
+
 ![Flags tab](docs/screenshots/flags-tab.png)
 
 ![Experiments tab](docs/screenshots/experiments-tab.png)
@@ -16,6 +18,7 @@ Built by [Jason Torres](https://github.com/jasonetorres), Developer Advocate at 
 - **In-editor flag awareness** in JS/TS/JSX/TSX: a gutter icon on known flag names in `useFlags`, `flagsmith.hasFeature` / `getValue`, and `flags.x` / `flags['x']`. The tooltip shows enabled/value/description. Click it to toggle, copy the value, or open the Flagsmith dashboard. Completion offers known flag names inside those string literals. An **Unknown Flagsmith flag** inspection warns when a literal isn't in your environment, with a quick fix to create it. These editor features use the JavaScript plugin when it is available, and a text-based fallback otherwise, so the plugin still loads in IDEs without JavaScript support.
 - An editor popup action, **Create Flagsmith Flag from Selection**.
 - An **Experiments** tab: list Flagsmith experiments, inspect status, flag, variants, metrics, rollout, and hypothesis, start / pause / complete an experiment, and see trait-based results with a winner, lift, p-value, a Significant/Not significant badge, and per-variant conversion bars.
+- **Toggles are kill switches.** If a running experiment holds a segment override on the flag, Flagsmith won't let you edit that override directly, so the plugin also flips the experiment's rollout `enabled` through the rollout endpoint. Off means off for every user; percentages and variant values are left alone.
 - Notifications if a toggle fails, with the checkbox rolled back.
 - Settings under **Settings | Tools | Flagsmith**. Your Organisation API key is stored in the IDE password safe, not in project files.
 
@@ -84,6 +87,7 @@ The plugin talks to the open source Flagsmith HTTP API. With the API URL set to 
 | Test connection | `GET /projects/` | `Authorization: Api-Key <org key>` |
 | List flags | `GET /flags/` | `X-Environment-Key: <environment key>` |
 | Toggle a flag | `PATCH /environments/<environment key>/featurestates/<id>/` with `{"enabled": true/false}` | `Authorization: Api-Key <org key>` |
+| Follow a toggle on an experiment rollout | `PATCH /environments/<environment key>/experiments/<id>/rollout/` with the current rollout and `enabled` flipped | `Authorization: Api-Key <org key>` |
 | List experiments | `GET /environments/<environment key>/experiments/` | `Authorization: Api-Key <org key>` |
 | Experiment detail | `GET /environments/<environment key>/experiments/<id>/` | `Authorization: Api-Key <org key>` |
 | Warehouse results | `GET /environments/<environment key>/experiments/<id>/results/` | `Authorization: Api-Key <org key>` |
