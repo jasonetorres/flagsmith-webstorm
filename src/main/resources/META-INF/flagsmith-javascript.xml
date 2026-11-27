@@ -1,0 +1,46 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider language="JavaScript" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="TypeScript" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="TypeScript JSX" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JSX Harmony" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagLineMarkerProvider"/>
+
+        <completion.contributor language="JavaScript" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagCompletionContributor"/>
+        <completion.contributor language="TypeScript" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagCompletionContributor"/>
+        <completion.contributor language="TypeScript JSX" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagCompletionContributor"/>
+        <completion.contributor language="JSX Harmony" implementationClass="com.jasontorres.flagsmith.editor.js.JsFlagCompletionContributor"/>
+
+        <localInspection
+            language="JavaScript"
+            shortName="UnknownFlagsmithFlag"
+            displayName="Unknown Flagsmith flag"
+            groupName="Flagsmith"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.jasontorres.flagsmith.editor.js.UnknownFlagInspection"/>
+        <localInspection
+            language="TypeScript"
+            shortName="UnknownFlagsmithFlagTS"
+            displayName="Unknown Flagsmith flag"
+            groupName="Flagsmith"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.jasontorres.flagsmith.editor.js.UnknownFlagInspection"/>
+        <localInspection
+            language="TypeScript JSX"
+            shortName="UnknownFlagsmithFlagTSX"
+            displayName="Unknown Flagsmith flag"
+            groupName="Flagsmith"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.jasontorres.flagsmith.editor.js.UnknownFlagInspection"/>
+        <localInspection
+            language="JSX Harmony"
+            shortName="UnknownFlagsmithFlagJSX"
+            displayName="Unknown Flagsmith flag"
+            groupName="Flagsmith"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="com.jasontorres.flagsmith.editor.js.UnknownFlagInspection"/>
+    </extensions>
+</idea-plugin>

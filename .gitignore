@@ -18,3 +18,11 @@ yarn-error.log*
 
 # macOS
 .DS_Store
+
+# Demo app
+demo/node_modules/
+demo/dist/
+demo/.env.local
+
+# Kotlin
+.kotlin/

@@ -1,16 +1,73 @@
 <idea-plugin>
     <id>com.jasontorres.flagsmith</id>
-    <name>Flagsmith</name>
-    <vendor url="https://github.com/jasonetorres">Jason Torres</vendor>
+    <name>Flagsmith Feature Flags</name>
+    <vendor email="jasontorres585@icloud.com" url="https://github.com/jasonetorres/flagsmith-webstorm">Jason Torres</vendor>
+
+    <idea-version since-build="263"/>
 
     <depends>com.intellij.modules.platform</depends>
-    <depends>JavaScript</depends>
+    <depends optional="true" config-file="flagsmith-javascript.xml">JavaScript</depends>
 
     <description><![CDATA[
-        Flagsmith integration for WebStorm.
-        Manage feature flags from your self-hosted Flagsmith instance directly in the IDE.
+        <p><b>Flagsmith Feature Flags</b> is an unofficial community plugin that brings your Flagsmith flags and experiments into JetBrains IDEs.</p>
+        <p>Browse, search, and toggle feature flags from a sidebar tool window. Open the Experiments tab to inspect Flagsmith experiments — hypothesis, variants, metrics, rollout, and trait-based A/B results. Your Organisation API key is stored in the IDE password safe, not in project files.</p>
+        <p>Works with self-hosted Flagsmith and with Flagsmith Cloud. Built against the open source Flagsmith API.</p>
+        <p>This plugin is not affiliated with, endorsed by, or officially supported by Flagsmith.</p>
+        <ul>
+          <li>Flags tool window: search, toggle, create, and edit flags</li>
+          <li>In-editor gutters, completion, and an unknown-flag inspection for JS/TS</li>
+          <li>Experiments tab: list experiments, view results, and start, pause, or complete them</li>
+          <li>Settings under <i>Settings | Tools | Flagsmith</i></li>
+        </ul>
     ]]></description>
 
+    <change-notes><![CDATA[
+        <h3>0.1.0</h3>
+        <ul>
+          <li>Initial Marketplace release</li>
+          <li>Flags tab: browse, search, toggle, create, and edit feature flags</li>
+          <li>In-editor gutters, completion, and an unknown-flag inspection for JS/TS flag APIs</li>
+          <li>Experiments tab: start, pause, or complete experiments, and view trait-based results with a winner, lift, p-value, and conversion bars</li>
+          <li>Settings page with the Organisation API key stored in the IDE password safe</li>
+        </ul>
+    ]]></change-notes>
+
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Settings page: Settings | Tools | Flagsmith -->
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.jasontorres.flagsmith.FlagsmithConfigurable"
+            id="com.jasontorres.flagsmith.settings"
+            displayName="Flagsmith"
+        />
+
+        <!-- Right sidebar tool window with Flags and Experiments tabs -->
+        <toolWindow
+            id="Flagsmith"
+            anchor="right"
+            factoryClass="com.jasontorres.flagsmith.FlagsmithToolWindow"
+        />
+
+        <!-- Notification group for toggle errors -->
+        <notificationGroup
+            id="Flagsmith"
+            displayType="BALLOON"
+        />
+
+        <postStartupActivity implementation="com.jasontorres.flagsmith.FlagCacheStartup"/>
+
+        <!-- Text fallback when the JavaScript plugin is not loaded -->
+        <annotator language="TEXT" implementationClass="com.jasontorres.flagsmith.editor.FlagTextAnnotator"/>
+        <completion.contributor language="TEXT" implementationClass="com.jasontorres.flagsmith.editor.FlagTextCompletionContributor"/>
     </extensions>
+
+    <actions>
+        <action
+            id="com.jasontorres.flagsmith.CreateFlagFromSelection"
+            class="com.jasontorres.flagsmith.editor.CreateFlagFromSelectionAction"
+            text="Create Flagsmith Flag from Selection"
+            description="Create a new Flagsmith feature flag using the selected text as the name">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>
